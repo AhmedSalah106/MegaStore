@@ -34,6 +34,11 @@ namespace MegaMarket.Repository
                 return context.Vendors.FirstOrDefault(e => e.Id == Id);
         }
 
+        public Vendor GetVendorByName(string Name)
+        {
+            return context.Vendors.FirstOrDefault(e => e.Name == Name);
+        }
+
         public void Insert(Vendor vendor)
         {
             context.Add(vendor);

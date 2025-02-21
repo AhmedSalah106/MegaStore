@@ -69,14 +69,7 @@ namespace MegaMarket.Controllers
                     else
                     {
 
-
-
-
-
-
-
                         Seller seller = new Seller();
-          
                         seller.Name = RegisterVM.Name;
                         seller.User = user;
                         seller.UserId = user.Id;
@@ -85,6 +78,8 @@ namespace MegaMarket.Controllers
                         sellerService.Save();
 
                         await userManager.AddToRoleAsync(user, "Seller");
+
+
 
                         await signInManager.SignInAsync(user, false);
 

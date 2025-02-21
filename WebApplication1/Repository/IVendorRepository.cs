@@ -11,5 +11,6 @@ namespace MegaMarket.Repository
         void Update(int Id);
         void Delete(int Id);
         void Save();
+        Vendor GetVendorByName(string Name);
     }
 }

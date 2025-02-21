@@ -40,6 +40,11 @@ namespace MegaMarket.Service
         {
             vendorRepository.Save();
         }
+
+        public int GetIdByName(string Name)
+        {
+            return vendorRepository.GetVendorByName(Name).Id; 
+        }
     }
 
 }
