@@ -13,6 +13,7 @@ namespace MegaMarket.Repository
         }
         public void Delete(int Id)
         {
+
             Category category = GetById(Id);
             context.Remove(category);
         }
