@@ -8,5 +8,6 @@ namespace MegaMarket1.Models
         [MinLength(2), MaxLength(50)]
         public string Name { get; set; }
         public List<Product>? Products { get; set; }
+        //
     }
 }
