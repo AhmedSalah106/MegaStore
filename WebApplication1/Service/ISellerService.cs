@@ -10,5 +10,6 @@ namespace MegaMarket.Service
         void Update(int Id);
         void Delete(int Id);
         void Save();
+        int GetIdByName(string Name);
     }
 }

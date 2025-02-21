@@ -37,5 +37,10 @@ namespace MegaMarket.Service
         {
             sellerRepository.Save();
         }
+
+        public int GetIdByName(string Name)
+        {
+            return sellerRepository.GetByName(Name).Id;
+        }
     }
 }

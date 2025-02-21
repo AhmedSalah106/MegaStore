@@ -5,7 +5,7 @@ using WebApplication1.Service;
 
 namespace MegaMarket.Repository
 {
-    public class SellerRepository:ISellerRepository
+    public class SellerRepository : ISellerRepository
     {
         private readonly ApplicationDbContext context;
         public SellerRepository(ApplicationDbContext _context)
@@ -31,6 +31,11 @@ namespace MegaMarket.Repository
                 return context.Sellers.Include(Includes).FirstOrDefault(e => e.Id == Id);
             else
                 return context.Sellers.FirstOrDefault(e => e.Id == Id);
+        }
+
+        public Seller GetByName(string Name)
+        {
+            return context.Sellers.FirstOrDefault(e=>e.Name ==Name);
         }
 
         public void Insert(Seller seller)
