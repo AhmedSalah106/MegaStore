@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "MegaStore - Welcome";
+}
+
+<!-- Hero Section -->
+<div class="container-fluid text-center text-white bg-gradient-primary py-5">
+    <h1 class="display-4 fw-bold">Welcome to MegaStore</h1>
+    <p class="lead">Your one-stop shop for everything you need</p>
+    <div class="mt-4">
+        @if (User.Identity.IsAuthenticated)
+        {
+                <a href="@Url.Action("Index", "Product")" class="btn btn-light btn-lg shadow me-2">Go to Products</a>
+        }
+        else
+        {
+                <a href="@Url.Action("Login", "Account")" class="btn btn-light btn-lg shadow me-2">Login</a>
+                <a href="@Url.Action("Register", "Account")" class="btn btn-outline-light btn-lg">Register</a>
+        }
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <h2 class="text-center text-primary">Why Choose MegaStore?</h2>
+    <div class="row text-center mt-4">
+        <div class="col-md-4">
+            <div class="p-4 shadow-sm rounded bg-light">
+                <i class="fas fa-shipping-fast fa-3x text-success mb-3"></i>
+                <h5>Fast Shipping</h5>
+                <p>We deliver your products in record time.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 shadow-sm rounded bg-light">
+                <i class="fas fa-lock fa-3x text-warning mb-3"></i>
+                <h5>Secure Payments</h5>
+                <p>Safe and reliable transactions.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 shadow-sm rounded bg-light">
+                <i class="fas fa-headset fa-3x text-danger mb-3"></i>
+                <h5>24/7 Support</h5>
+                <p>We are here to help anytime.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="text-center py-3 bg-dark text-white">
+    <p>&copy; 2025 MegaStore. All rights reserved.</p>
+</footer>
+
+<!-- Custom Styles -->
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #007bff, #6610f2);
+    }
+    .shadow-sm:hover {
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2) !important;
+    }
+</style>
+
+<!-- FontAwesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>

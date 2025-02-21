@@ -2,6 +2,7 @@
 using MegaMarket.Repository;
 using MegaMarket.Service;
 using MegaMarket.ViewModel;
+using MegaStore.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Service;
@@ -105,6 +106,47 @@ namespace MegaMarket.Controllers
 
 
             return View("Register",RegisterVM);
+        }
+
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View("Login");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SaveLogin(LoginViewModel loginVM)
+        {
+            if (ModelState.IsValid)
+            {
+                
+                ApplicationUser user = await userManager.FindByNameAsync(loginVM.UserName);
+                if (user != null)
+                {
+                    bool check = await userManager.CheckPasswordAsync(user,loginVM.Password);
+                    if (check)
+                    {
+                        var role = await userManager.GetRolesAsync(user);
+                        await signInManager.SignInAsync(user, loginVM.RememberME);
+                        if (role.Contains("Vendor"))
+                        {
+                            return RedirectToAction("index", "Vendor");
+                        }
+                        else if (role.Contains("Seller"))
+                        {
+                            return RedirectToAction("Index", "Product");
+                        }
+                        else
+                            return RedirectToAction("index", "product");
+                        
+                    }
+
+                }
+                ModelState.AddModelError(string.Empty, "Enter Valid Data");
+            }
+            return View("Login", loginVM);
         }
     }
 }
