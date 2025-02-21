@@ -15,7 +15,7 @@ namespace WebApplication1.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("Index1");
         }
 
         public IActionResult Privacy()
