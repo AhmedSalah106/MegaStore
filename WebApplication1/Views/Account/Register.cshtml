@@ -1,0 +1,93 @@
+﻿@model MegaMarket.ViewModel.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2 class="text-center my-4 text-primary fw-bold">Register</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5 p-4 shadow-lg rounded bg-light">
+        <form asp-action="SaveRegister" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Name -->
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-bold">Name</label>
+                <input asp-for="Name" class="form-control border-primary" placeholder="Enter your name" required/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label fw-bold">Password</label>
+                <input asp-for="Password" type="password" class="form-control border-primary" placeholder="Enter password" required/>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label fw-bold">Confirm Password</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control border-primary" placeholder="Confirm password" required/>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Register As:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="sellerRadio" name="UserRole" value="Seller"/>
+                    <label class="form-check-label" for="sellerRadio">Seller</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="vendorRadio" name="UserRole" value="Vendor"/>
+                    <label class="form-check-label" for="vendorRadio">Vendor</label>
+                </div>
+            </div>
+
+            <!-- Hidden Fields for IsSeller and IsVendor -->
+            <input type="hidden" asp-for="IsSeller" id="isSellerField"/>
+            <input type="hidden" asp-for="IsVendor" id="isVendorField"/>
+
+            <!-- Phone Number (Only for Vendor) -->
+            <div class="mb-3" id="phoneNumberContainer" style="display: none;">
+                <label asp-for="Phone" class="form-label fw-bold">Phone Number</label>
+                <input asp-for="Phone" type="tel" class="form-control border-primary" placeholder="Enter phone number"/>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 fw-bold">Register</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var sellerRadio = document.getElementById("sellerRadio");
+                var vendorRadio = document.getElementById("vendorRadio");
+                var phoneContainer = document.getElementById("phoneNumberContainer");
+
+                var isSellerField = document.getElementById("isSellerField");
+                var isVendorField = document.getElementById("isVendorField");
+
+                function toggleFields() {
+                    if (vendorRadio.checked) {
+                        phoneContainer.style.display = "block";
+                        isSellerField.value = "false";
+                        isVendorField.value = "true";
+                    } else {
+                        phoneContainer.style.display = "none";
+                        isSellerField.value = "true";
+                        isVendorField.value = "false";
+                    }
+                }
+
+                sellerRadio.addEventListener("change", toggleFields);
+                vendorRadio.addEventListener("change", toggleFields);
+
+                toggleFields(); // Initialize on page load
+            });
+        </script>
+}
