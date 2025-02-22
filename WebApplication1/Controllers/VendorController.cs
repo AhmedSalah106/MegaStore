@@ -67,6 +67,5 @@ namespace MegaMarket.Controllers
             ModelState.AddModelError(string.Empty, "Invalid Data");
             return View("AddProduct",productVM);
         }
-
     }
 }

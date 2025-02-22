@@ -23,5 +23,6 @@ namespace MegaMarket.Controllers
             List<ProductViewModel> productsVM = productService.GetAllProductViewModel();
             return View("index" , productsVM);
         }
+
     }
 }
