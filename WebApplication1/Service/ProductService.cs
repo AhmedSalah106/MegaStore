@@ -45,7 +45,7 @@ namespace MegaMarket.Service
 
             List<ProductViewModel>productsVM = products.Select
                 (e=> new ProductViewModel{ Name = e.Name, Description = e.Description,
-                    Price = e.Price ,VendorId = e.VendorId , Brand = e.Brand ,
+                    Price = e.Price ,VendorId = e.VendorId , Brand = e.Brand , imageURL = e.ImageURL ,
                     Amount = e.Amount , CategoryId = e.CategoryId}).ToList();
 
             return productsVM;

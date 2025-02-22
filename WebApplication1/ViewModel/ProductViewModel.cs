@@ -11,6 +11,7 @@ namespace MegaMarket.ViewModel
         public decimal Price { get; set; }
         [MinLength(2), MaxLength(50)]
         public string Brand { get; set; }
+        public string? imageURL {  get; set; }
         [ForeignKey("Vendor")]
         public int VendorId { get; set; }
         [ForeignKey("Category")]
