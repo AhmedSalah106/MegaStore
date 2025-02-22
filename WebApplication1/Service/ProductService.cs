@@ -34,6 +34,7 @@ namespace MegaMarket.Service
             product.Name = model.Name;  
             product.Description = model.Description;
             product.Amount = model.Amount;
+            product.Price = model.Price;
             product.VendorId = 1;
             product.CategoryId = 1;
             return product;
