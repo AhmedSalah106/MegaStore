@@ -15,6 +15,7 @@ namespace MegaMarket1.Models
         public string Brand { get; set; }
         [ForeignKey("Vendor")]
         public int VendorId {  get; set; }
+        public string? ImageURL {  get; set; }
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         [MinLength(2), MaxLength(100)]
