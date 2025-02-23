@@ -5,6 +5,7 @@ namespace MegaMarket.ViewModel
 {
     public class ProductViewModel
     {
+        public int? Id { get; set; }
         [MinLength(2), MaxLength(50)]
         public string Name { get; set; }
         [Range(0, double.MaxValue)]

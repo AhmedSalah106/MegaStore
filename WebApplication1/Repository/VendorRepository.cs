@@ -43,7 +43,6 @@ namespace MegaMarket.Repository
         {
             context.Add(vendor);
         }
-
         public void Save()
         {
             context.SaveChanges();
@@ -53,6 +52,6 @@ namespace MegaMarket.Repository
         {
             Vendor vendor = GetById(Id);
             context.Update(vendor);
-        }
+        } 
     }
 }

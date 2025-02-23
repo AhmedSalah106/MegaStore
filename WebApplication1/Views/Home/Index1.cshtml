@@ -9,7 +9,14 @@
     <div class="mt-4">
         @if (User.Identity.IsAuthenticated)
         {
+            if(User.IsInRole("Vendor"))
+            {
+                <a href="@Url.Action("Index", "Vendor")" class="btn btn-light btn-lg shadow me-2">Go to Your Products</a>
+            }
+            else if(User.IsInRole("Seller"))
+            {
                 <a href="@Url.Action("Index", "Product")" class="btn btn-light btn-lg shadow me-2">Go to Products</a>
+            }
         }
         else
         {
