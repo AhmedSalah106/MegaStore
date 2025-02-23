@@ -6,11 +6,12 @@ namespace MegaMarket.Service
 {
     public class ProductService : IProductService
     {
-
+        private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IProductRepository productRepository;
-        public ProductService(IProductRepository _productRepository)
+        public ProductService(IProductRepository _productRepository , IWebHostEnvironment _webHostEnvironment)
         {
-            productRepository = _productRepository;   
+            productRepository = _productRepository; 
+            webHostEnvironment = _webHostEnvironment;
         }
         public void Delete(int Id)
         {
@@ -22,11 +23,37 @@ namespace MegaMarket.Service
             return productRepository.GetAll(Includes);
         }
 
+        public ProductViewModel GetProductViewModel(int Id)
+        {
+            Product product = GetById(Id);
+            ProductViewModel productVM = new ProductViewModel();
+            productVM.Id = Id;
+            productVM.Name = product.Name;
+            productVM.Description = product.Description;
+            productVM.Brand = product.Brand;
+            productVM.Price = product.Price;
+            productVM.imageURL = product.ImageURL;
+            productVM.CategoryId = product.CategoryId;
+            productVM.Amount = product.Amount;
+            productVM.VendorId = product.VendorId;
+            return productVM;
+        }
         public Product GetById(int Id, string Includes = null)
         {
             return productRepository.GetById(Id, Includes);
         }
 
+
+        public Product GetUpdated(int id, ProductViewModel productVM )
+        {
+            Product product = GetById(id);
+            product.Description = productVM.Description;
+            product.Brand = productVM.Brand;
+            product.Price = productVM.Price;
+            product.CategoryId = productVM.CategoryId;
+            product.Amount = productVM.Amount;
+            return product;
+        }
         public Product GetProduct(ProductViewModel model)
         {
             Product product = new Product();
@@ -35,7 +62,7 @@ namespace MegaMarket.Service
             product.Description = model.Description;
             product.Amount = model.Amount;
             product.Price = model.Price;
-            product.VendorId = 1;
+            product.VendorId = model.VendorId;
             product.CategoryId = 1;
             return product;
         }
@@ -62,9 +89,9 @@ namespace MegaMarket.Service
             productRepository.Save();
         }
 
-        public void Update(int Id)
+        public void Update(Product product)
         {
-            productRepository.Update(Id);
+            productRepository.Update(product);
         }
     }
 }

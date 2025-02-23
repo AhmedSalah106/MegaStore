@@ -43,9 +43,8 @@ namespace MegaMarket.Repository
             context.SaveChanges();
         }
 
-        public void Update(int Id)
+        public void Update(Product product)
         {
-            Product product = GetById(Id);
             context.Update(product);
         }
     }

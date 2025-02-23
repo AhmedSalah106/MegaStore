@@ -9,9 +9,11 @@ namespace MegaMarket.Service
         Product GetById(int Id, string Includes = null);
         List<Product> GetAll(string Includes = null);
         void Insert(Product product);
-        void Update(int Id);
+        void Update(Product product);
         void Delete(int Id);
         void Save();
+        Product GetUpdated(int id, ProductViewModel productVM );
+        ProductViewModel GetProductViewModel(int Id);
         List<ProductViewModel> GetAllProductViewModel();
         Product GetProduct(ProductViewModel model);
     }

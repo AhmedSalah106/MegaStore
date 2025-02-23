@@ -1,5 +1,7 @@
 ﻿using MegaMarket.Models;
+using MegaMarket.ViewModel;
 using MegaMarket1.Models;
+using MegaStore.ViewModel;
 
 namespace MegaMarket.Service
 {
@@ -11,6 +13,10 @@ namespace MegaMarket.Service
         void Update(int Id);
         void Delete(int Id);
         void Save();
+        VendorProductsViewModel GetVendorProductsVM(int Id);
+        decimal GetTotalSailed(int Id);
+        List<Product>GetProductsByVendorId(int Id);
         int GetIdByName(string Name);
+        List<ProductViewModel> GetAllProductsVM(List<Product> products);
     }
 }

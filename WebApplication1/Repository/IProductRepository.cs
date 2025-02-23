@@ -7,7 +7,7 @@ namespace MegaMarket.Repository
         Product GetById(int Id, string Includes = null);
         List<Product> GetAll(string Includes = null);
         void Insert(Product product);
-        void Update(int Id);
+        void Update(Product product);
         void Delete(int Id);
         void Save();
 

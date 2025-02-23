@@ -3,8 +3,12 @@ using MegaMarket.Repository;
 using MegaMarket.Service;
 using MegaMarket.ViewModel;
 using MegaMarket1.Models;
+using MegaStore.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Security.Cryptography.Xml;
 using WebApplication1.Service;
 
 namespace MegaMarket.Controllers
@@ -15,6 +19,7 @@ namespace MegaMarket.Controllers
         private readonly IVendorService vendorService;
         private readonly IProductService productService;
         private readonly UserManager<ApplicationUser>  userManager;
+
         public VendorController(IWebHostEnvironment _webHostEnvironment,
             IVendorService _vendorService ,
             IProductService _productService ,
@@ -25,26 +30,44 @@ namespace MegaMarket.Controllers
             vendorService = _vendorService;
             userManager = _userManager;
         }
+
+        [Authorize(Roles ="Vendor")]
         public IActionResult Index()
         {
-            return View("Index");
+
+            int id = GetVendorId();
+            VendorProductsViewModel products = vendorService.GetVendorProductsVM(id);
+       
+            return View("index" , products);  
         }
 
-        public IActionResult AddProduct()
+        private int GetVendorId( )
+        {
+            return vendorService.GetIdByName(GetVendorName());
+        }
+
+        private string GetVendorName()
+        {
+            return User.Claims.FirstOrDefault(e => e.Type == ClaimTypes.Name).Value.ToString();
+        }
+
+        [Authorize(Roles ="Vendor")]
+        public async Task<IActionResult> AddProduct()
         {
             return View("AddProduct");
         }
+
         [HttpPost]
+        [Authorize(Roles ="Vendor")]
         public async Task<IActionResult> SaveProduct(IFormFile ImageFile ,ProductViewModel productVM) 
         {
             if(ModelState.IsValid) 
             {
                 Product product = productService.GetProduct(productVM);
 
-                ApplicationUser user = await userManager.GetUserAsync(User);
-                string userName = user.UserName;
+                string userName = GetVendorName();
 
-                productVM.VendorId = vendorService.GetIdByName(userName);
+                product.VendorId = vendorService.GetIdByName(userName);
 
                 string wRootPath = Path.Combine(webHostEnvironment.WebRootPath, "Images");
 
@@ -57,7 +80,6 @@ namespace MegaMarket.Controllers
                 }
 
                 product.ImageURL = Path.Combine("/Images" , imageName);
-
                 productService.Insert(product);
                 productService.Save();
 
@@ -67,5 +89,53 @@ namespace MegaMarket.Controllers
             ModelState.AddModelError(string.Empty, "Invalid Data");
             return View("AddProduct",productVM);
         }
+        [Authorize(Roles ="Vendor")]
+        public IActionResult Edit(int id)
+        {
+            ProductViewModel productVM = productService.GetProductViewModel(id);
+            return View("Edit" , productVM);
+        }
+
+        [Authorize(Roles ="Vendor")]
+        public IActionResult SaveEdit(int id,ProductViewModel productVM  )
+        {
+            if (ModelState.IsValid)
+            {
+                Product product = productService.GetUpdated(id,productVM );
+                productService.Update(product);
+                productService.Save();
+                return RedirectToAction("index");
+            }
+
+
+
+            ModelState.AddModelError(string.Empty, "invalid Data enter");
+            return View("Edit", productVM);
+        }
+
+
+        [Authorize(Roles ="Vendor")]
+        public IActionResult Delete(int Id)
+        {
+            if(ModelState.IsValid)
+            {
+
+                string imagePath = productService.GetById(Id).ImageURL.TrimStart('/');
+
+                string wrootPath = Path.Combine(webHostEnvironment.WebRootPath, imagePath);
+
+                if (System.IO.File.Exists(wrootPath))
+                {
+                    System.IO.File.Delete(wrootPath);
+                }
+                else
+                    return RedirectToAction("index", "product");
+                productService.Delete(Id);
+                productService.Save();
+                return RedirectToAction("Index");
+            }
+            return View("index","product");
+        }
+
     }
 }

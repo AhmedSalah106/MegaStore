@@ -15,7 +15,7 @@ namespace MegaMarket.Models
         [EmailAddress]
         public string? Email { get; set; }
         [Range(0, double.MaxValue)]
-        public decimal TotalSaled {  get; set; } = decimal.Zero;
+        public decimal TotalSaled {  get; set; } 
 
         [Phone]
         public string PhoneNumber { get; set; }
