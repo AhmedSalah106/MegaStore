@@ -47,6 +47,13 @@
                         </div>
             }
             </div>
+
+            <!-- Checkout Button -->
+            <div class="text-center mt-4">
+                <a href="@Url.Action("CheckOut", "Product")" class="btn btn-success btn-lg">
+                    <i class="fas fa-credit-card"></i> Proceed to Checkout
+                </a>
+            </div>
     }
     else
     {
@@ -95,6 +102,13 @@
 
     .text-muted {
         font-style: italic;
+    }
+
+    .btn-success {
+        width: 300px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        padding: 10px;
     }
 </style>
 

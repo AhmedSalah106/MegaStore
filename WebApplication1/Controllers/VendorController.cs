@@ -3,10 +3,13 @@ using MegaMarket.Repository;
 using MegaMarket.Service;
 using MegaMarket.ViewModel;
 using MegaMarket1.Models;
+using MegaStore.Hubs;
 using MegaStore.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography.Xml;
 using WebApplication1.Service;
@@ -19,16 +22,19 @@ namespace MegaMarket.Controllers
         private readonly IVendorService vendorService;
         private readonly IProductService productService;
         private readonly UserManager<ApplicationUser>  userManager;
+        private readonly IHubContext<ProductHub> hubClients;
 
         public VendorController(IWebHostEnvironment _webHostEnvironment,
             IVendorService _vendorService ,
             IProductService _productService ,
-            UserManager<ApplicationUser>_userManager)
+            UserManager<ApplicationUser>_userManager,
+            IHubContext<ProductHub>_hubClients)
         {
             webHostEnvironment = _webHostEnvironment;
             productService = _productService;
             vendorService = _vendorService;
             userManager = _userManager;
+            hubClients = _hubClients;
         }
 
         [Authorize(Roles ="Vendor")]
@@ -83,6 +89,12 @@ namespace MegaMarket.Controllers
                 productService.Insert(product);
                 productService.Save();
 
+
+
+                hubClients.Clients.All.SendAsync("AddProductNotify", product);
+
+
+
                 return RedirectToAction("Index");
             }
 
@@ -128,8 +140,7 @@ namespace MegaMarket.Controllers
                 {
                     System.IO.File.Delete(wrootPath);
                 }
-                else
-                    return RedirectToAction("index", "product");
+                
                 productService.Delete(Id);
                 productService.Save();
                 return RedirectToAction("Index");
