@@ -1,7 +1,9 @@
 using MegaMarket.Repository;
 using MegaMarket.Service;
+using MegaStore.Hubs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using WebApplication1.Service;
 
 namespace WebApplication1
@@ -21,6 +23,8 @@ namespace WebApplication1
                 }
             );
 
+            builder.Services.AddSignalR();
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option => 
                 {
                     option.Password.RequireNonAlphanumeric = false;
@@ -31,13 +35,13 @@ namespace WebApplication1
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddScoped<IVendorService,VendorService>();
-            builder.Services.AddScoped<IProductService,ProductService>();
+            builder.Services.AddScoped<IProductService,MegaMarket.Service.ProductService>();
             builder.Services.AddScoped<IProductRepository,ProductRepository>();
             builder.Services.AddScoped<IVendorRepository,VendorRepository>();
             builder.Services.AddScoped<ISellerRepository,SellerRepository>();
             builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
             builder.Services.AddScoped<ISellerService,SellerService>();
-
+            
 
             var app = builder.Build();
 
@@ -50,7 +54,11 @@ namespace WebApplication1
 
             app.UseRouting();
 
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+
             app.UseAuthorization();
+
+            app.MapHub<ProductHub>("/ProductH");
 
             app.MapControllerRoute(
                 name: "default",
