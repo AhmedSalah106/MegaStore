@@ -8,6 +8,8 @@ using Stripe.BillingPortal;
 using WebApplication1.Service;
 using Stripe.Checkout;
 using Stripe;
+using MegaMarket1.Models;
+using Newtonsoft.Json;
 
 namespace MegaMarket.Controllers
 {
@@ -27,9 +29,54 @@ namespace MegaMarket.Controllers
             return View("index" , productsVM);
         }
 
+
+        public IActionResult AddToCart(int id , int Quantity)
+        {
+           // MegaMarket1.Models.Product product = productService.GetById(ProductId);
+            ProductCart product = productService.GetProductCart(id , Quantity);
+
+            string CartJson = HttpContext.Session.GetString("ProductsCart");
+            List<ProductCart> products = CartJson==null ? new List<ProductCart>() : JsonConvert.DeserializeObject<List<ProductCart>>(CartJson);
+            products.Add(product);
+
+            HttpContext.Session.SetString("ProductsCart" , JsonConvert.SerializeObject(products));
+
+ 
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Cart()
+        {
+            string ProductJson = HttpContext.Session.GetString("ProductsCart");
+
+            List<ProductCart> products = ProductJson == null ? new List<ProductCart>() : JsonConvert.DeserializeObject<List<ProductCart>>(ProductJson);
+
+            return View("CartView" , products);
+        }
+
+        public IActionResult RemoveFromCart(int id)
+        {
+
+            string productJson = HttpContext.Session.GetString("ProductsCart");
+
+            List<ProductCart>products = JsonConvert.DeserializeObject<List<ProductCart>>(productJson);
+
+
+            products.RemoveAll(e =>e.Id == id);
+
+            HttpContext.Session.SetString("ProductsCart", JsonConvert.SerializeObject(products));
+
+            
+
+            return RedirectToAction("Cart"); 
+        }
         public IActionResult CheckOut()
         {
-            List<ProductViewModel> productsVM = productService.GetAllProductViewModel().Take(1).ToList();
+
+            string ProductsJson = HttpContext.Session.GetString("ProductsCart");
+
+            List<ProductViewModel> productsVM = ProductsJson == null ? new List<ProductViewModel>() : JsonConvert.DeserializeObject<List<ProductViewModel>>(ProductsJson);
 
             var domain = "http://localhost:5122/";
             var option = new Stripe.Checkout.SessionCreateOptions
@@ -46,14 +93,14 @@ namespace MegaMarket.Controllers
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)(item.Price),
+                        UnitAmount = (long)(item.Price*100),
                         Currency = "usd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.Name
                         }
                     },
-                    Quantity = item.Amount
+                    Quantity = 1
                 };
                 option.LineItems.Add(SessionListItem);
             }

@@ -41,7 +41,15 @@ namespace WebApplication1
             builder.Services.AddScoped<ISellerRepository,SellerRepository>();
             builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
             builder.Services.AddScoped<ISellerService,SellerService>();
-            
+
+            builder.Services.AddSession(option =>
+            {
+                option.IOTimeout = TimeSpan.FromMinutes(5);
+                option.IdleTimeout = TimeSpan.FromMinutes(5);
+                option.Cookie.HttpOnly = true;
+
+            });
+            builder.Services.AddDistributedMemoryCache();
 
             var app = builder.Build();
 
@@ -60,6 +68,8 @@ namespace WebApplication1
 
             app.MapHub<ProductHub>("/ProductH");
 
+
+            app.UseSession();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
