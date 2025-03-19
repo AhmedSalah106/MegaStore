@@ -72,7 +72,7 @@ namespace MegaMarket.Service
             List<Product> products = GetAll();
 
             List<ProductViewModel>productsVM = products.Select
-                (e=> new ProductViewModel{ Name = e.Name, Description = e.Description,
+                (e=> new ProductViewModel{ Id = e.Id , Name = e.Name, Description = e.Description,
                     Price = e.Price ,VendorId = e.VendorId , Brand = e.Brand , imageURL = e.ImageURL ,
                     Amount = e.Amount , CategoryId = e.CategoryId}).ToList();
 
@@ -92,6 +92,20 @@ namespace MegaMarket.Service
         public void Update(Product product)
         {
             productRepository.Update(product);
+        }
+
+        public ProductCart GetProductCart(int Id , int Quantity)
+        {
+             Product product = GetById(Id);
+            ProductCart productCart = new ProductCart()
+            {
+                Id = Id ,
+                Name = product.Name,
+                ImageUrl = product.ImageURL,
+                Quantity = Quantity,
+                Price = product.Price * Quantity
+            };
+            return productCart;
         }
     }
 }

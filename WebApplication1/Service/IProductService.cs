@@ -12,6 +12,8 @@ namespace MegaMarket.Service
         void Update(Product product);
         void Delete(int Id);
         void Save();
+
+        ProductCart GetProductCart(int Id , int Quantity);
         Product GetUpdated(int id, ProductViewModel productVM );
         ProductViewModel GetProductViewModel(int Id);
         List<ProductViewModel> GetAllProductViewModel();

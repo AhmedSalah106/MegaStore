@@ -10,19 +10,19 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         .navbar {
-            background-color: #007bff;
+        background-color: #007bff;
         }
         .navbar-brand, .nav-link {
-            color: #fff !important;
-            font-weight: bold;
+        color: #fff !important;
+        font-weight: bold;
         }
         .nav-link:hover {
-            text-decoration: underline;
+        text-decoration: underline;
         }
         .footer {
-            background-color: #f8f9fa;
-            padding: 15px 0;
-            text-align: center;
+        background-color: #f8f9fa;
+        padding: 15px 0;
+        text-align: center;
         }
     </style>
 </head>
@@ -45,30 +45,37 @@
                         @if (User.IsInRole("Admin"))
 
                         {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Role" asp-action="AddRole">Manage Roles</a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Role" asp-action="AddRole">Manage Roles</a>
+                            </li>
+                        }      
+                        @if(User.IsInRole("Seller"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-outline-light ms-2" asp-area="" asp-controller="Product" asp-action="Cart">Cart</a>
+                            </li>
                         }
                     </ul>
                     <ul class="navbar-nav">
                         @if (!User.Identity.IsAuthenticated)
 
                         {
-                                <li class="nav-item">
-                                    <a class="nav-link btn btn-light text-primary" asp-area="" asp-controller="Account" asp-action="Register">Sign Up</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link btn btn-outline-light ms-2" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-light text-primary" asp-area="" asp-controller="Account" asp-action="Register">Sign Up</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-outline-light ms-2" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
                         }
 
                         else
 
                         {
-                                <li class="nav-item">
-                                    <a class="nav-link btn btn-danger text-white" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-danger text-white" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
                         }
+
                     </ul>
                 </div>
             </div>

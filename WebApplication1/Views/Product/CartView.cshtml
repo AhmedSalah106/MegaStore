@@ -1,0 +1,113 @@
+﻿@model List<MegaStore.ViewModel.ProductCart>
+
+@{
+    ViewData["Title"] = "Shopping Cart - MegaStore";
+    decimal totalPrice = Model.Sum(p => p.Price * p.Quantity);
+}
+
+<div class="container mt-5">
+    <h2 class="text-center text-primary fw-bold">
+        <i class="fas fa-shopping-cart"></i> Your Shopping Cart
+    </h2>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
+            @foreach (var product in Model)
+            {
+                <div class="col">
+                    <div class="card shadow border-0 h-100">
+                        <img src="@product.ImageUrl" class="card-img-top cart-img" alt="@product.Name">
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-dark">@product.Name</h5>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-success fw-bold"><i class="fas fa-dollar-sign"></i>@product.Price</span>
+                            </div>
+
+                            <p class="mt-2 text-secondary">
+                                <i class="fas fa-box-open"></i> Quantity: <strong>@product.Quantity</strong>
+                            </p>
+
+                            <!-- Remove from Cart Button -->
+                            <div class="text-center mt-3">
+                                <a href="@Url.Action("RemoveFromCart", "Product", new { name = product.Name })" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Cart Summary Section -->
+        <div class="cart-summary text-center mt-5 p-4 shadow rounded">
+            <h4 class="fw-bold text-primary">Cart Summary</h4>
+            <p class="fs-5 text-dark">Total Items: <strong>@Model.Sum(p => p.Quantity)</strong></p>
+            <p class="fs-5 text-success">Total Price: <strong><i class="fas fa-dollar-sign"></i>@totalPrice</strong></p>
+
+            <a href="@Url.Action("CheckOut", "Product")" class="btn btn-success btn-lg">
+                <i class="fas fa-credit-card"></i> Proceed to Checkout
+            </a>
+
+            <a href="@Url.Action("Index", "Product")" class="btn btn-primary btn-lg">
+                <i class="fas fa-arrow-left"></i> Back to Products
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center mt-4" role="alert">
+            <i class="fas fa-info-circle"></i> <strong>Your cart is empty!</strong> Start shopping now.
+        </div>
+
+        <!-- Show only Back to Products when cart is empty -->
+        <div class="text-center mt-4">
+            <a href="@Url.Action("Index", "Product")" class="btn btn-primary btn-lg">
+                <i class="fas fa-arrow-left"></i> Back to Products
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .cart-img {
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+        border: none;
+    }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    .cart-summary {
+        background: linear-gradient(to right, #ff9a9e, #fad0c4);
+        color: white;
+    }
+
+        .cart-summary .btn-success {
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 250px;
+            padding: 10px;
+            background: #28a745;
+            border-radius: 8px;
+        }
+
+            .cart-summary .btn-success:hover {
+                background: #218838;
+            }
+</style>
+
+<!-- FontAwesome Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
