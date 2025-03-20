@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    int cartCount = Context.Session.GetInt32("ProductCount") ?? 0;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -51,9 +54,13 @@
                         }      
                         @if(User.IsInRole("Seller"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-light ms-2" asp-area="" asp-controller="Product" asp-action="Cart">Cart</a>
-                            </li>
+                            <a href="@Url.Action("Cart", "Product")" class="btn btn-primary position-relative">
+                                <i class="fas fa-shopping-cart"></i> Cart
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        @cartCount
+                                    </span>
+                            </a>
+
                         }
                     </ul>
                     <ul class="navbar-nav">

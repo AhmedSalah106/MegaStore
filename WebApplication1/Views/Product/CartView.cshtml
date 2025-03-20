@@ -12,34 +12,42 @@
 
     @if (Model != null && Model.Count > 0)
     {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
-            @foreach (var product in Model)
-            {
-                <div class="col">
-                    <div class="card shadow border-0 h-100">
-                        <img src="@product.ImageUrl" class="card-img-top cart-img" alt="@product.Name">
-
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold text-dark">@product.Name</h5>
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-success fw-bold"><i class="fas fa-dollar-sign"></i>@product.Price</span>
-                            </div>
-
-                            <p class="mt-2 text-secondary">
-                                <i class="fas fa-box-open"></i> Quantity: <strong>@product.Quantity</strong>
-                            </p>
-
-                            <!-- Remove from Cart Button -->
-                            <div class="text-center mt-3">
-                                <a href="@Url.Action("RemoveFromCart", "Product", new { name = product.Name })" class="btn btn-danger btn-sm">
+        <div class="table-responsive mt-4">
+            <table class="table table-striped table-hover text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@product.ImageUrl" class="cart-img" alt="@product.Name">
+                            </td>
+                            <td class="fw-bold">@product.Name</td>
+                            <td class="text-success fw-bold">
+                                <i class="fas fa-dollar-sign"></i>@product.Price
+                            </td>
+                            <td>@product.Quantity</td>
+                            <td class="text-success fw-bold">
+                                <i class="fas fa-dollar-sign"></i>@(product.Price * product.Quantity)
+                            </td>
+                            <td>
+                                <a href="javascript:void(0);" onclick="confirmRemove('@Url.Action("RemoveFromCart", "Product", new { id = product.Id })')" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash-alt"></i> Remove
                                 </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
 
         <!-- Cart Summary Section -->
@@ -63,7 +71,6 @@
             <i class="fas fa-info-circle"></i> <strong>Your cart is empty!</strong> Start shopping now.
         </div>
 
-        <!-- Show only Back to Products when cart is empty -->
         <div class="text-center mt-4">
             <a href="@Url.Action("Index", "Product")" class="btn btn-primary btn-lg">
                 <i class="fas fa-arrow-left"></i> Back to Products
@@ -75,20 +82,11 @@
 <!-- Custom Styles -->
 <style>
     .cart-img {
-        height: 180px;
+        width: 60px;
+        height: 60px;
         object-fit: cover;
-        border-radius: 10px 10px 0 0;
+        border-radius: 5px;
     }
-
-    .card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-        border: none;
-    }
-
-        .card:hover {
-            transform: scale(1.02);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-        }
 
     .cart-summary {
         background: linear-gradient(to right, #ff9a9e, #fad0c4);
@@ -108,6 +106,15 @@
                 background: #218838;
             }
 </style>
+
+<!-- JavaScript for Confirmation -->
+<script>
+    function confirmRemove(url) {
+        if (confirm("Are you sure you want to remove this item from your cart?")) {
+            window.location.href = url;
+        }
+    }
+</script>
 
 <!-- FontAwesome Icons -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>

@@ -32,18 +32,36 @@ namespace MegaMarket.Controllers
 
         public IActionResult AddToCart(int id , int Quantity)
         {
-           // MegaMarket1.Models.Product product = productService.GetById(ProductId);
-            ProductCart product = productService.GetProductCart(id , Quantity);
-
+           // MegaMarket1.Models.Product product = productService.GetById(ProductId);            
+            MegaMarket1.Models.Product myProduct = productService.GetById(id);
+            myProduct.Amount -= Quantity;
+            productService.Update(myProduct);
             string CartJson = HttpContext.Session.GetString("ProductsCart");
             List<ProductCart> products = CartJson==null ? new List<ProductCart>() : JsonConvert.DeserializeObject<List<ProductCart>>(CartJson);
-            products.Add(product);
 
-            HttpContext.Session.SetString("ProductsCart" , JsonConvert.SerializeObject(products));
+            if(products.Find(product => product.Id == id)!=null)
+            {
+                ProductCart ProductInCart = products.FirstOrDefault(product => product.Id == id);
+                ProductInCart.Quantity += Quantity;
 
- 
+                products.RemoveAll(e => e.Id == id);
+                products.Add(ProductInCart);
+                HttpContext.Session.SetString("ProductsCart", JsonConvert.SerializeObject(products));
+            }
+            else
+            {
+                ProductCart product = productService.GetProductCart(id , Quantity);
+                products.Add(product);
+                HttpContext.Session.SetString("ProductsCart" , JsonConvert.SerializeObject(products));
+                int Total = HttpContext.Session.GetInt32("ProductCount")??0;
+                Total++;
+                HttpContext.Session.SetInt32("ProductCount", Total);
 
-            return RedirectToAction("Index");
+            }
+
+
+
+                return RedirectToAction("Index");
         }
 
         public IActionResult Cart()
@@ -67,7 +85,10 @@ namespace MegaMarket.Controllers
 
             HttpContext.Session.SetString("ProductsCart", JsonConvert.SerializeObject(products));
 
-            
+            int Total = HttpContext.Session.GetInt32("ProductCount") ?? 0;
+            Total--;
+
+            HttpContext.Session.SetInt32("ProductCount", Total);
 
             return RedirectToAction("Cart"); 
         }
