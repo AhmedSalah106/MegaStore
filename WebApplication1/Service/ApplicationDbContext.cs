@@ -1,5 +1,6 @@
 ﻿using MegaMarket.Models;
 using MegaMarket1.Models;
+using MegaStore.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,5 +15,6 @@ namespace WebApplication1.Service
         public DbSet<Category> Categories { get; set; }
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
+        public DbSet<Order> Orders { get; set; }
     }
 }
