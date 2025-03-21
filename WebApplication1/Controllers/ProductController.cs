@@ -10,6 +10,8 @@ using Stripe.Checkout;
 using Stripe;
 using MegaMarket1.Models;
 using Newtonsoft.Json;
+using MegaStore.ViewModel;
+using Stripe.Climate;
 
 namespace MegaMarket.Controllers
 {
@@ -28,68 +30,101 @@ namespace MegaMarket.Controllers
             List<ProductViewModel> productsVM = productService.GetAllProductViewModel();
             return View("index" , productsVM);
         }
-
-
-        public IActionResult AddToCart(int id , int Quantity)
+        private List<ProductCart> GetProductCartFromSession()
         {
-           // MegaMarket1.Models.Product product = productService.GetById(ProductId);            
-            MegaMarket1.Models.Product myProduct = productService.GetById(id);
-            myProduct.Amount -= Quantity;
-            productService.Update(myProduct);
             string CartJson = HttpContext.Session.GetString("ProductsCart");
-            List<ProductCart> products = CartJson==null ? new List<ProductCart>() : JsonConvert.DeserializeObject<List<ProductCart>>(CartJson);
+            List<ProductCart> products = CartJson == null ? new List<ProductCart>() : JsonConvert.DeserializeObject<List<ProductCart>>(CartJson);
+            return products;
+        }
 
-            if(products.Find(product => product.Id == id)!=null)
+        private void UpdateProductCartInSession(ProductCart product)
+        {
+            List<ProductCart> products = GetProductCartFromSession();
+            if (products.FirstOrDefault(e => e.Id == product.Id) != null)
             {
-                ProductCart ProductInCart = products.FirstOrDefault(product => product.Id == id);
-                ProductInCart.Quantity += Quantity;
+                ProductCart ProductInCart = products.FirstOrDefault(product => product.Id == product.Id);
+                ProductInCart.Quantity += product.Quantity;
 
-                products.RemoveAll(e => e.Id == id);
+                RemoveProductFromCartInSession(product.Id);
+                products = GetProductCartFromSession();
                 products.Add(ProductInCart);
-                HttpContext.Session.SetString("ProductsCart", JsonConvert.SerializeObject(products));
             }
             else
             {
-                ProductCart product = productService.GetProductCart(id , Quantity);
+                IncreaseNumberOfProductsCartInSession();
                 products.Add(product);
-                HttpContext.Session.SetString("ProductsCart" , JsonConvert.SerializeObject(products));
-                int Total = HttpContext.Session.GetInt32("ProductCount")??0;
-                Total++;
-                HttpContext.Session.SetInt32("ProductCount", Total);
-
             }
+                SaveProductsCartSession(products);
+        }
 
 
 
-                return RedirectToAction("Index");
+        private void RemoveProductFromCartInSession(int id)
+        {
+            List<ProductCart> products = GetProductCartFromSession();
+            if (products.FirstOrDefault(e => e.Id == id) != null)
+            {
+                products.RemoveAll(e => e.Id == id);
+                SaveProductsCartSession(products);
+            }
+        }
+
+        private int GetNumberOfProductsCartInSession()
+        {
+            int Total = HttpContext.Session.GetInt32("ProductCount") ?? 0;
+            return Total;
+        }
+
+        private void SaveNumberOfProductsCartInSession(int Total)
+        {
+            HttpContext.Session.SetInt32("ProductCount", Total);
+        }
+
+        private void SaveProductsCartSession(List<ProductCart>products)
+        {
+            HttpContext.Session.SetString("ProductsCart", JsonConvert.SerializeObject(products));
+        }
+
+        private void IncreaseNumberOfProductsCartInSession()
+        {
+
+            int Total = GetNumberOfProductsCartInSession();
+            Total++;
+            SaveNumberOfProductsCartInSession(Total);
+        }
+
+        private void DecreaseNumberOfProductsCartInSession()
+        {
+            int Total = GetNumberOfProductsCartInSession();
+            Total--;
+            SaveNumberOfProductsCartInSession(Total);
+        }
+
+        public IActionResult AddToCart(int id , int Quantity)
+        {
+
+            MegaMarket1.Models.Product myProduct = productService.GetById(id);
+
+            myProduct.Amount -= Quantity;
+            productService.Update(myProduct);
+            
+            ProductCart productCart = productService.GetProductCart(id, Quantity);
+            UpdateProductCartInSession(productCart);
+            return RedirectToAction("Index");
         }
 
         public IActionResult Cart()
         {
-            string ProductJson = HttpContext.Session.GetString("ProductsCart");
-
-            List<ProductCart> products = ProductJson == null ? new List<ProductCart>() : JsonConvert.DeserializeObject<List<ProductCart>>(ProductJson);
-
+            
+            List<ProductCart> products = GetProductCartFromSession();
             return View("CartView" , products);
         }
 
         public IActionResult RemoveFromCart(int id)
         {
 
-            string productJson = HttpContext.Session.GetString("ProductsCart");
-
-            List<ProductCart>products = JsonConvert.DeserializeObject<List<ProductCart>>(productJson);
-
-
-            products.RemoveAll(e =>e.Id == id);
-
-            HttpContext.Session.SetString("ProductsCart", JsonConvert.SerializeObject(products));
-
-            int Total = HttpContext.Session.GetInt32("ProductCount") ?? 0;
-            Total--;
-
-            HttpContext.Session.SetInt32("ProductCount", Total);
-
+            RemoveProductFromCartInSession(id);
+            DecreaseNumberOfProductsCartInSession();
             return RedirectToAction("Cart"); 
         }
         public IActionResult CheckOut()

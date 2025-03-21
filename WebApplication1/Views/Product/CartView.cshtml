@@ -33,16 +33,16 @@
                             </td>
                             <td class="fw-bold">@product.Name</td>
                             <td class="text-success fw-bold">
-                                <i class="fas fa-dollar-sign"></i>@product.Price
+                                <i class="fas fa-dollar-sign"></i> @product.Price
                             </td>
                             <td>@product.Quantity</td>
                             <td class="text-success fw-bold">
-                                <i class="fas fa-dollar-sign"></i>@(product.Price * product.Quantity)
+                                <i class="fas fa-dollar-sign"></i> @(product.Price * product.Quantity)
                             </td>
                             <td>
-                                <a href="javascript:void(0);" onclick="confirmRemove('@Url.Action("RemoveFromCart", "Product", new { id = product.Id })')" class="btn btn-danger btn-sm">
+                                <button class="btn btn-danger btn-sm" onclick="confirmRemove('@Url.Action("RemoveFromCart", "Product", new { id = product.Id })')">
                                     <i class="fas fa-trash-alt"></i> Remove
-                                </a>
+                                </button>
                             </td>
                         </tr>
                     }
@@ -50,11 +50,11 @@
             </table>
         </div>
 
-        <!-- Cart Summary Section -->
+        <!-- Cart Summary -->
         <div class="cart-summary text-center mt-5 p-4 shadow rounded">
             <h4 class="fw-bold text-primary">Cart Summary</h4>
             <p class="fs-5 text-dark">Total Items: <strong>@Model.Sum(p => p.Quantity)</strong></p>
-            <p class="fs-5 text-success">Total Price: <strong><i class="fas fa-dollar-sign"></i>@totalPrice</strong></p>
+            <p class="fs-5 text-success">Total Price: <strong><i class="fas fa-dollar-sign"></i> @totalPrice</strong></p>
 
             <a href="@Url.Action("CheckOut", "Product")" class="btn btn-success btn-lg">
                 <i class="fas fa-credit-card"></i> Proceed to Checkout
@@ -79,6 +79,40 @@
     }
 </div>
 
+<!-- Remove Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> Confirm Removal
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="fs-5 text-dark">Are you sure you want to remove this item from your cart?</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <a href="#" id="confirmRemoveBtn" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Yes, Remove
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Confirmation -->
+<script>
+    function confirmRemove(url) {
+        document.getElementById("confirmRemoveBtn").setAttribute("href", url);
+        var modal = new bootstrap.Modal(document.getElementById("confirmModal"));
+        modal.show();
+    }
+</script>
+
 <!-- Custom Styles -->
 <style>
     .cart-img {
@@ -91,6 +125,8 @@
     .cart-summary {
         background: linear-gradient(to right, #ff9a9e, #fad0c4);
         color: white;
+        border-radius: 10px;
+        padding: 20px;
     }
 
         .cart-summary .btn-success {
@@ -107,14 +143,6 @@
             }
 </style>
 
-<!-- JavaScript for Confirmation -->
-<script>
-    function confirmRemove(url) {
-        if (confirm("Are you sure you want to remove this item from your cart?")) {
-            window.location.href = url;
-        }
-    }
-</script>
-
-<!-- FontAwesome Icons -->
+<!-- FontAwesome & Bootstrap Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
