@@ -10,7 +10,7 @@
     </h2>
 
     <p class="text-center text-muted">
-        Manage your product inventory effortlessly. View details, update stock, and add products to your cart in just a few clicks!
+        Click on any product to view details and add it to your cart.
     </p>
 
     @if (Model != null && Model.Count > 0)
@@ -19,27 +19,20 @@
             @foreach (var product in Model)
             {
                 <div class="col">
-                    <div class="card shadow-sm border-0">
-                        <img src="@product.imageURL" class="card-img-top product-img" alt="Product Image">
-
-                        <div class="card-body">
+                    <div class="card product-card shadow border-0 p-3" onclick="showProductDetails('@product.Id', '@product.Name', '@product.Brand', '@product.Price', '@product.Amount', '@product.CategoryId')">
+                        <img src="@product.imageURL" class="card-img-top img-fluid rounded" style="max-height: 200px; object-fit: cover;" alt="Product Image">
+                        <div class="card-body text-center">
                             <h5 class="card-title fw-bold">@product.Name</h5>
-                            <p class="card-text text-muted"><i class="fas fa-tag"></i> @product.Brand</p>
+                            <p class="text-muted"><i class="fas fa-tag"></i> @product.Brand</p>
 
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="badge bg-primary">@GetCategoryName(product.CategoryId)</span>
-                                <span class="text-success fw-bold"><i class="fas fa-dollar-sign"></i> @product.Price</span>
+                                <span class="text-success fw-bold fs-5"><i class="fas fa-dollar-sign"></i> @product.Price</span>
                             </div>
 
-                            <p class="mt-2 text-secondary">
-                                <i class="fas fa-box-open"></i> Stock: <strong>@product.Amount</strong>
+                            <p class="mt-2 text-secondary fw-bold">
+                                <i class="fas fa-box-open"></i> Stock: <span class="text-dark">@product.Amount</span>
                             </p>
-
-                            <div class="text-center mt-3">
-                                <button class="btn btn-warning btn-sm" onclick="showQuantityModal('@product.Id', '@product.Name', '@product.Amount')">
-                                    <i class="fas fa-cart-plus"></i> Add to Cart
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -54,36 +47,32 @@
     }
 </div>
 
-<!-- Quantity Selection Modal -->
-<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<!-- Product Details Modal -->
+<div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="quantityModalLabel">
-                    <i class="fas fa-cart-plus"></i> Select Quantity
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="productDetailsModalLabel">
+                    <i class="fas fa-info-circle"></i> Product Details
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p class="fw-bold fs-5 text-dark">
-                    <strong>Product:</strong> <span id="modalProductName" class="text-primary"></span>
-                </p>
+                <h4 id="modalProductName" class="fw-bold text-primary mt-3"></h4>
+                <p><strong>Brand:</strong> <span id="modalProductBrand"></span></p>
+                <p><strong>Category:</strong> <span id="modalProductCategory"></span></p>
+                <p><strong>Price:</strong> <span id="modalProductPrice" class="text-success fw-bold fs-4"></span></p>
+                <p><strong>Stock:</strong> <span id="modalProductStock" class="fs-5 text-dark"></span></p>
 
-                <form id="cartForm">
-                    <input type="hidden" id="productId" name="id">
+                <!-- Add to Cart Section -->
+                <div class="mt-3">
+                    <label for="quantity" class="fw-bold">Select Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" class="form-control text-center fs-5 fw-bold w-50 mx-auto" min="1" required oninput="validateQuantity()">
+                </div>
 
-                    <!-- Centered, Colorful, and Interactive Label -->
-                    <div class="quantity-input-container">
-                        <label for="quantity" class="quantity-label">Enter Quantity</label>
-                        <input type="number" id="quantity" name="quantity" class="form-control text-center fs-5 fw-bold" min="1" required oninput="validateQuantity()">
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </form>
+                <button class="btn btn-warning btn-lg mt-3" onclick="addToCart()">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
             </div>
         </div>
     </div>
@@ -104,97 +93,26 @@
     }
 }
 
-<!-- Custom Styles -->
-<style>
-    .product-img {
-        height: 200px;
-        object-fit: cover;
-        border-radius: 10px 10px 0 0;
-    }
-
-    .card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-    }
-
-        .card:hover {
-            transform: scale(1.03);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
-        }
-
-    .btn {
-        width: 100%;
-    }
-
-    .text-muted {
-        font-style: italic;
-    }
-
-    .btn-success {
-        width: 300px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        padding: 10px;
-    }
-
-    /* Quantity Input Styles */
-    .quantity-input-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-top: 15px;
-        position: relative;
-    }
-
-    .quantity-label {
-        background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 10px;
-        transition: transform 0.2s ease-in-out, background 0.3s ease-in-out;
-    }
-
-        .quantity-label:hover {
-            transform: scale(1.1);
-            background: linear-gradient(45deg, #ff758c, #ff7eb3);
-        }
-
-    #quantity {
-        width: 80px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        text-align: center;
-        border: 2px solid #007bff;
-        border-radius: 10px;
-        padding: 8px;
-        outline: none;
-        transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    }
-
-        #quantity:focus {
-            border-color: #28a745;
-            box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.5);
-        }
-</style>
-
 <!-- JavaScript -->
 <script>
+    let selectedProductId = null;
     let maxStock = 1;
 
-    function showQuantityModal(productId, productName, availableStock) {
-        document.getElementById("productId").value = productId;
-        document.getElementById("modalProductName").innerText = productName;
-        let quantityInput = document.getElementById("quantity");
+    function showProductDetails(id, name, brand, price, stock, categoryId) {
+        document.getElementById("modalProductName").innerText = name;
+        document.getElementById("modalProductBrand").innerText = brand;
+        document.getElementById("modalProductCategory").innerText = getCategoryName(categoryId);
+        document.getElementById("modalProductPrice").innerHTML = `<i class="fas fa-dollar-sign"></i> ${price}`;
+        document.getElementById("modalProductStock").innerText = stock;
+        selectedProductId = id;
 
-        maxStock = parseInt(availableStock);
+        let quantityInput = document.getElementById("quantity");
+        maxStock = parseInt(stock);
         quantityInput.value = 1;
         quantityInput.max = maxStock;
 
-        var quantityModal = new bootstrap.Modal(document.getElementById("quantityModal"));
-        quantityModal.show();
+        var productDetailsModal = new bootstrap.Modal(document.getElementById("productDetailsModal"));
+        productDetailsModal.show();
     }
 
     function validateQuantity() {
@@ -209,14 +127,21 @@
         }
     }
 
-    document.getElementById("cartForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        let productId = document.getElementById("productId").value;
+    function addToCart() {
         let quantity = document.getElementById("quantity").value;
+        window.location.href = `/Product/AddToCart?id=${encodeURIComponent(selectedProductId)}&quantity=${encodeURIComponent(quantity)}`;
+    }
 
-        window.location.href = `/Product/AddToCart?id=${encodeURIComponent(productId)}&quantity=${encodeURIComponent(quantity)}`;
-    });
+    function getCategoryName(categoryId) {
+        switch (parseInt(categoryId)) {
+            case 1: return "📱 Electronics";
+            case 2: return "👕 Clothing";
+            case 3: return "🏡 Home & Kitchen";
+            case 4: return "📚 Books";
+            case 5: return "💄 Beauty & Personal Care";
+            default: return "🛍️ Other";
+        }
+    }
 </script>
 
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>

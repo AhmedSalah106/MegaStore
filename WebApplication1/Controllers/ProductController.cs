@@ -12,15 +12,19 @@ using MegaMarket1.Models;
 using Newtonsoft.Json;
 using MegaStore.ViewModel;
 using Stripe.Climate;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace MegaMarket.Controllers
 {
     public class ProductController : Controller
     {
         private readonly IProductService productService;
-
-        public ProductController(IProductService _productService )
+        private readonly UserManager<ApplicationUser> userManager;
+        public ProductController(IProductService _productService ,
+            UserManager<ApplicationUser> _userManager)
         {
+            userManager = _userManager;
             productService = _productService;
         }
 
@@ -180,8 +184,24 @@ namespace MegaMarket.Controllers
             return RedirectToAction("Cancel");
         }
 
-        public IActionResult Success()
+        public  IActionResult Success()
         {
+
+            string SellerName =  User.Claims.FirstOrDefault(e => e.Type == ClaimTypes.Name).Value.ToString();
+
+            List<ProductCart> products = GetProductCartFromSession();
+            decimal TotalPrice = products.Sum(e => e.Price * e.Quantity);
+
+            MegaStore.Models.Order order = new MegaStore.Models.Order()
+            {
+                OrderDate = DateTime.Now,
+                CustomerName = SellerName,
+                TotalAmount = TotalPrice
+            };
+
+            HttpContext.Session.Remove("ProductsCart");
+            HttpContext.Session.Remove("ProductCount");
+            
             return View("Success");
         }
 
