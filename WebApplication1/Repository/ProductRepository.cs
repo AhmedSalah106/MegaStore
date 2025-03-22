@@ -33,6 +33,11 @@ namespace MegaMarket.Repository
                 return context.Products.FirstOrDefault(e => e.Id == Id);
         }
 
+        public int GetTotalProducts()
+        {
+            return context.Products.Sum(e=>e.Amount);
+        }
+
         public void Insert(Product product)
         {
             context.Add(product);

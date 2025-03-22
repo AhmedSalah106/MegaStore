@@ -1,8 +1,8 @@
 ﻿using MegaStore.Models;
 
-namespace MegaStore.Repository
+namespace MegaStore.Service
 {
-    public interface IOrderRepository
+    public interface IOrderService
     {
         Order GetById(int Id, string Includes = null);
         List<Order> GetAll(string Includes = null);

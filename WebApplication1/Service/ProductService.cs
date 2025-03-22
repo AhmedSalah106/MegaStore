@@ -107,5 +107,10 @@ namespace MegaMarket.Service
             };
             return productCart;
         }
+
+        public int GetTotalProducts()
+        {
+            return productRepository.GetTotalProducts();
+        }
     }
 }

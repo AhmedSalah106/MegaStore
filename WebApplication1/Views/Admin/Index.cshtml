@@ -1,1 +1,121 @@
-﻿
+﻿@model AdminDashBoardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <!-- Stats Overview -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Sales</h5>
+                    <p class="card-text">@(Model.TotalSales > 0 ? Model.TotalSales.ToString("C") : "$0")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <p class="card-text">@(Model.TotalUsers > 0 ? Model.TotalUsers : 0)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Products</h5>
+                    <p class="card-text">@(Model.TotalProducts > 0 ? Model.TotalProducts : 0)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Orders</h5>
+                    <p class="card-text">@(Model.TotalOrders > 0 ? Model.TotalOrders : 0)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders (Static Data) -->
+    <h4 class="mt-4">Recent Orders</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1001</td>
+                <td>John Doe</td>
+                <td>$250</td>
+                <td>Completed</td>
+                <td>2025-03-15</td>
+            </tr>
+            <tr>
+                <td>1002</td>
+                <td>Jane Smith</td>
+                <td>$120</td>
+                <td>Pending</td>
+                <td>2025-03-14</td>
+            </tr>
+            <tr>
+                <td>1003</td>
+                <td>Michael Brown</td>
+                <td>$300</td>
+                <td>Shipped</td>
+                <td>2025-03-13</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Product Management -->
+    <h4 class="mt-4">Product Management</h4>
+    @if (Model.ProductsInMarket != null && Model.ProductsInMarket.Any())
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.ProductsInMarket)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>@(product.Price > 0 ? product.Price.ToString("C") : "$0")</td>
+                        <td>@(product.Amount > 0 ? product.Amount : 0)</td>
+                        <td>
+
+                                <a href="@Url.Action("Delete", "Vendor", new { id = product.Id })" class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Are you sure you want to delete this product?');">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">No products available.</p>
+    }
+</div>

@@ -129,12 +129,12 @@ namespace MegaMarket.Controllers
                         {
                             return RedirectToAction("index", "Vendor");
                         }
-                        else if (role.Contains("Seller"))
+                        else if (role.Contains("Admin"))
                         {
-                            return RedirectToAction("Index", "Product");
+                            return RedirectToAction("index", "Admin");
                         }
                         else
-                            return RedirectToAction("index", "product");
+                            return RedirectToAction("index", "Product");
                         
                     }
 

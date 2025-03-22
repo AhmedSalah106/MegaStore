@@ -13,6 +13,7 @@ namespace MegaMarket.Service
         void Delete(int Id);
         void Save();
 
+        int GetTotalProducts();
         ProductCart GetProductCart(int Id , int Quantity);
         Product GetUpdated(int id, ProductViewModel productVM );
         ProductViewModel GetProductViewModel(int Id);
