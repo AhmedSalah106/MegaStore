@@ -52,5 +52,10 @@ namespace MegaStore.Repository
         {
             return context.Orders.Sum(e => e.TotalAmount);
         }
+
+        public int GetTotalOrders()
+        {
+            return context.Orders.Count();
+        }
     }
 }

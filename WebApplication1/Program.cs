@@ -1,6 +1,8 @@
 using MegaMarket.Repository;
 using MegaMarket.Service;
 using MegaStore.Hubs;
+using MegaStore.Repository;
+using MegaStore.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
@@ -41,6 +43,8 @@ namespace WebApplication1
             builder.Services.AddScoped<ISellerRepository,SellerRepository>();
             builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
             builder.Services.AddScoped<ISellerService,SellerService>();
+            builder.Services.AddScoped<IOrderService,OrderService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
             builder.Services.AddSession(option =>
             {

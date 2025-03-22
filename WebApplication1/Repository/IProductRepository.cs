@@ -11,5 +11,7 @@ namespace MegaMarket.Repository
         void Delete(int Id);
         void Save();
 
+        int GetTotalProducts();
+
     }
 }

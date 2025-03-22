@@ -126,7 +126,7 @@ namespace MegaMarket.Controllers
         }
 
 
-        [Authorize(Roles ="Vendor")]
+        [Authorize(Roles ="Vendor,Admin")]
         public IActionResult Delete(int Id)
         {
             if(ModelState.IsValid)
@@ -143,7 +143,11 @@ namespace MegaMarket.Controllers
                 
                 productService.Delete(Id);
                 productService.Save();
-                return RedirectToAction("Index");
+
+                if (User.IsInRole("Amdin"))
+                    return RedirectToAction("index,Admin");
+                else
+                    return RedirectToAction("index");
             }
             return View("index","product");
         }

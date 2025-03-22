@@ -14,6 +14,7 @@ using MegaStore.ViewModel;
 using Stripe.Climate;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using MegaStore.Service;
 
 namespace MegaMarket.Controllers
 {
@@ -21,11 +22,14 @@ namespace MegaMarket.Controllers
     {
         private readonly IProductService productService;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IOrderService orderService;
         public ProductController(IProductService _productService ,
-            UserManager<ApplicationUser> _userManager)
+            UserManager<ApplicationUser> _userManager,
+            IOrderService orderService)
         {
             userManager = _userManager;
             productService = _productService;
+            this.orderService = orderService;
         }
 
         [Authorize(Roles ="Seller")]
@@ -199,6 +203,10 @@ namespace MegaMarket.Controllers
                 TotalAmount = TotalPrice
             };
 
+
+            orderService.Insert(order);
+            orderService.Save();
+
             HttpContext.Session.Remove("ProductsCart");
             HttpContext.Session.Remove("ProductCount");
             
@@ -209,9 +217,5 @@ namespace MegaMarket.Controllers
         {
             return View("Cancel");
         }
-
-
-
-
     }
 }

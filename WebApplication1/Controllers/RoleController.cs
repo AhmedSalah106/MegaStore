@@ -29,7 +29,7 @@ namespace MegaMarket.Controllers
                 IdentityResult result = await roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index","Vendor");
+                    return RedirectToAction("Index","Admin");
                 }
 
                 foreach (IdentityError error in result.Errors)
