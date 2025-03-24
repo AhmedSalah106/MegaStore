@@ -19,7 +19,7 @@
             @foreach (var product in Model)
             {
                 <div class="col">
-                    <div class="card product-card shadow border-0 p-3" onclick="showProductDetails('@product.Id', '@product.Name', '@product.Brand', '@product.Price', '@product.Amount', '@product.CategoryId')">
+                    <div class="card product-card shadow border-0 p-3" onclick="showProductDetails('@product.Id', '@product.Name', '@product.Brand', '@product.Price', '@product.Amount', '@product.CategoryId', '@product.VendorId', '@product.VendorName')">
                         <img src="@product.imageURL" class="card-img-top img-fluid rounded" style="max-height: 200px; object-fit: cover;" alt="Product Image">
                         <div class="card-body text-center">
                             <h5 class="card-title fw-bold">@product.Name</h5>
@@ -63,6 +63,7 @@
                 <p><strong>Category:</strong> <span id="modalProductCategory"></span></p>
                 <p><strong>Price:</strong> <span id="modalProductPrice" class="text-success fw-bold fs-4"></span></p>
                 <p><strong>Stock:</strong> <span id="modalProductStock" class="fs-5 text-dark"></span></p>
+                <p><strong>Vendor:</strong> <span id="modalVendorName" class="fs-5 text-info"></span></p>
 
                 <!-- Add to Cart Section -->
                 <div class="mt-3">
@@ -72,6 +73,11 @@
 
                 <button class="btn btn-warning btn-lg mt-3" onclick="addToCart()">
                     <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+
+                <!-- Chat with Vendor Button -->
+                <button class="btn btn-primary btn-lg mt-3" onclick="openChat()">
+                    <i class="fas fa-comments"></i> Chat with Vendor
                 </button>
             </div>
         </div>
@@ -97,14 +103,20 @@
 <script>
     let selectedProductId = null;
     let maxStock = 1;
+    let selectedVendorId = null;
+    let selectedVendorName = null;
 
-    function showProductDetails(id, name, brand, price, stock, categoryId) {
+    function showProductDetails(id, name, brand, price, stock, categoryId, vendorId, vendorName) {
         document.getElementById("modalProductName").innerText = name;
         document.getElementById("modalProductBrand").innerText = brand;
         document.getElementById("modalProductCategory").innerText = getCategoryName(categoryId);
         document.getElementById("modalProductPrice").innerHTML = `<i class="fas fa-dollar-sign"></i> ${price}`;
         document.getElementById("modalProductStock").innerText = stock;
+        document.getElementById("modalVendorName").innerText = vendorName;
+
         selectedProductId = id;
+        selectedVendorId = vendorId;
+        selectedVendorName = vendorName;
 
         let quantityInput = document.getElementById("quantity");
         maxStock = parseInt(stock);
@@ -130,6 +142,14 @@
     function addToCart() {
         let quantity = document.getElementById("quantity").value;
         window.location.href = `/Product/AddToCart?id=${encodeURIComponent(selectedProductId)}&quantity=${encodeURIComponent(quantity)}`;
+    }
+
+    function openChat() {
+        if (!selectedVendorId) {
+            alert("Vendor information is not available.");
+            return;
+        }
+        window.location.href = `/Chat/Index?vendorId=${encodeURIComponent(selectedVendorId)}&vendorName=${encodeURIComponent(selectedVendorName)}`;
     }
 
     function getCategoryName(categoryId) {

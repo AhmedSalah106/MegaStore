@@ -164,6 +164,42 @@ namespace MegaMarket.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("MegaStore.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReciverId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReciverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("MegaStore.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -429,6 +465,23 @@ namespace MegaMarket.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("MegaStore.Models.Message", b =>
+                {
+                    b.HasOne("WebApplication1.Service.ApplicationUser", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReciverId");
+
+                    b.HasOne("WebApplication1.Service.ApplicationUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
