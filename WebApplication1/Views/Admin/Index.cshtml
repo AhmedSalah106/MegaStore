@@ -4,128 +4,130 @@
 }
 
 <div class="container mt-4">
-    <h2 class="mb-4">Admin Dashboard</h2>
+    <h2 class="mb-4 text-center">Admin Dashboard</h2>
 
     <!-- Stats Overview -->
-    <div class="row">
+    <div class="row text-center">
         <div class="col-md-3">
             <div class="card text-white bg-primary mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Total Sales</h5>
-                    <p class="card-text">@(Model.TotalSales > 0 ? Model.TotalSales.ToString("C") : "$0")</p>
+                    <p class="card-text">@Model.TotalSales.ToString("C")</p>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="card text-white bg-success mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Total Users</h5>
-                    <p class="card-text">@(Model.TotalUsers > 0 ? Model.TotalUsers : 0)</p>
+                    <p class="card-text">@Model.TotalUsers</p>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="card text-white bg-warning mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Total Products</h5>
-                    <p class="card-text">@(Model.TotalProducts > 0 ? Model.TotalProducts : 0)</p>
+                    <p class="card-text">@Model.TotalProducts</p>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="card text-white bg-danger mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Total Orders</h5>
-                    <p class="card-text">@(Model.TotalOrders > 0 ? Model.TotalOrders : 0)</p>
+                    <p class="card-text">@Model.TotalOrders</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Button to Show Vendors -->
-    <button class="btn btn-primary mt-4" onclick="toggleVendors()">
-        <i class="fas fa-users"></i> View Vendors
-    </button>
+    <!-- Vendor Section -->
+    <h4 class="mt-4">Vendors List</h4>
 
-    <!-- Vendor Search Input -->
-    <div id="vendorSearchContainer" style="display: none; margin-top: 10px;">
-        <input type="text" id="vendorSearch" class="form-control mb-3" placeholder="Search vendors by name..." onkeyup="filterVendors()">
+    <!-- Search Box -->
+    <div class="mb-3">
+        <input type="text" id="vendorSearch" class="form-control" placeholder="Search vendor by name..." onkeyup="filterVendors()">
     </div>
 
-    <!-- Vendors Section (Initially Hidden) -->
-    <div id="vendorsSection" style="display: none; margin-top: 20px;">
-        <h4 class="mt-4">Vendors List</h4>
-
-        @if (Model.vendors != null && Model.vendors.Any())
+    <div class="row" id="vendorCardsContainer">
+        @foreach (var vendor in Model.vendors)
         {
-            <div class="row" id="vendorList">
-                @foreach (var vendor in Model.vendors)
-                {
-                    <div class="col-md-4 vendor-card">
-                        <div class="card border-primary mb-3 shadow-sm">
-                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">@vendor.Name</h5>
-                                <button class="btn btn-light btn-sm" onclick="toggleVendorDetails(this)">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </div>
-                            <div class="card-body vendor-details" style="display: none;">
-                                <p><i class="fas fa-envelope"></i> <strong>Email:</strong> @vendor.Email</p>
-                                <p><i class="fas fa-phone"></i> <strong>Phone:</strong> @vendor.PhoneNumber</p>
-                                <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> @(string.IsNullOrEmpty(vendor.Address) ? "Not Provided" : vendor.Address)</p>
-                                <p><i class="fas fa-dollar-sign"></i> <strong>Total Sales:</strong> @vendor.TotalSaled.ToString("C")</p>
-                            </div>
+            <div class="col-md-4 vendor-card" data-name="@vendor.Name.ToLower()">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" onclick="toggleVendorDetails(@vendor.Id)" style="cursor: pointer;">
+                            @vendor.Name <span id="toggle-icon-@vendor.Id">➕</span>
+                        </h5>
+                        <div id="vendor-details-@vendor.Id" class="vendor-details" style="display: none; background: rgba(255, 255, 255, 0.2); padding: 10px; border-top: 1px solid white;">
+                            <p><strong>Email:</strong> @vendor.Email</p>
+                            <p><strong>Phone:</strong> @vendor.PhoneNumber</p>
+                            <p><strong>Address:</strong> @vendor.Address</p>
+                            <p><strong>Total Sales:</strong> $@vendor.TotalSaled.ToString("N2")</p>
                         </div>
                     </div>
-                }
+                </div>
             </div>
         }
-        else
-        {
-            <p class="text-muted">No vendors available.</p>
-        }
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="d-flex justify-content-center mt-3">
+        <button id="prevPage" class="btn btn-secondary mx-2" onclick="changePage(-1)" disabled>&lt;</button>
+        <button id="nextPage" class="btn btn-secondary mx-2" onclick="changePage(1)">&gt;</button>
     </div>
 </div>
 
+<!-- JavaScript -->
 <script>
-    function toggleVendors() {
-        var vendorsSection = document.getElementById("vendorsSection");
-        var searchContainer = document.getElementById("vendorSearchContainer");
+    let currentPage = 1;
+    const vendorsPerPage = 3;
+    let allVendors = [...document.querySelectorAll(".vendor-card")];
 
-        if (vendorsSection.style.display === "none") {
-            vendorsSection.style.display = "block";
-            searchContainer.style.display = "block";
-        } else {
-            vendorsSection.style.display = "none";
-            searchContainer.style.display = "none";
-        }
+    function paginateVendors(vendors = allVendors) {
+        let totalVendors = vendors.length;
+        let totalPages = Math.ceil(totalVendors / vendorsPerPage);
+
+        vendors.forEach((card, index) => {
+            card.style.display = (index >= (currentPage - 1) * vendorsPerPage && index < currentPage * vendorsPerPage) ? "block" : "none";
+        });
+
+        document.getElementById("prevPage").disabled = currentPage === 1;
+        document.getElementById("nextPage").disabled = currentPage === totalPages;
     }
 
-    function toggleVendorDetails(button) {
-        var cardBody = button.closest(".card").querySelector(".vendor-details");
-        if (cardBody.style.display === "none") {
-            cardBody.style.display = "block";
-            button.innerHTML = '<i class="fas fa-chevron-up"></i>';
+    function changePage(direction) {
+        currentPage += direction;
+        paginateVendors();
+    }
+
+    function toggleVendorDetails(id) {
+        let detailsDiv = document.getElementById(`vendor-details-${id}`);
+        let icon = document.getElementById(`toggle-icon-${id}`);
+
+        if (detailsDiv.style.display === "none") {
+            detailsDiv.style.display = "block";
+            icon.textContent = "➖";
         } else {
-            cardBody.style.display = "none";
-            button.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            detailsDiv.style.display = "none";
+            icon.textContent = "➕";
         }
     }
 
     function filterVendors() {
-        var input = document.getElementById("vendorSearch").value.toLowerCase();
-        var vendorCards = document.querySelectorAll(".vendor-card");
+        let searchQuery = document.getElementById("vendorSearch").value.toLowerCase();
+        let vendorCards = document.querySelectorAll(".vendor-card");
 
-        vendorCards.forEach(function (card) {
-            var name = card.querySelector(".card-header h5").innerText.toLowerCase();
-            if (name.includes(input)) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
+        let filteredVendors = [...vendorCards].filter(card => {
+            let vendorName = card.getAttribute("data-name");
+            return vendorName.includes(searchQuery);
         });
+
+        allVendors.forEach(card => card.style.display = "none"); // Hide all vendors
+        currentPage = 1; // Reset pagination for filtered results
+        paginateVendors(filteredVendors);
     }
+
+    // Initialize Pagination
+    paginateVendors();
 </script>

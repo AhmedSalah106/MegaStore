@@ -16,5 +16,6 @@ namespace WebApplication1.Service
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Message> Messages { get; set; }
     }
 }

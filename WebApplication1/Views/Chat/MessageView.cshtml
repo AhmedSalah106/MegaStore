@@ -1,0 +1,73 @@
+﻿@model List<Message>
+@{
+    ViewData["Title"] = "Chat";
+}
+
+<h2>Chat</h2>
+<div class="chat-box">
+    @foreach (var message in Model)
+    {
+        <div class="message @(message.SenderId == User.FindFirst("sub")?.Value ? "sent" : "received")">
+            <p>@message.Content</p>
+            <small>@message.TimeStamp.ToShortTimeString()</small>
+        </div>
+    }
+</div>
+
+<input type="text" id="messageInput" class="form-control" placeholder="Type your message...">
+<button class="btn btn-primary" onclick="sendMessage()">Send</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+    connection.on("ReceiveMessage", function(senderId, message) {
+        let chatBox = document.querySelector(".chat-box");
+        let newMessage = document.createElement("div");
+        newMessage.classList.add("message", senderId === "@User.FindFirst("sub")?.Value" ? "sent" : "received");
+        newMessage.innerHTML = `<p>${message}</p><small>Now</small>`;
+        chatBox.appendChild(newMessage);
+    });
+
+    connection.start().catch(err => console.error(err.toString()));
+
+    function sendMessage() {
+        let message = document.getElementById("messageInput").value;
+        let receiverId = "@ViewBag.ReceiverId";
+
+        fetch("/Chat/SendMessage", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `receiverId=${receiverId}&content=${message}`
+        }).then(response => {
+            if (response.ok) {
+                connection.invoke("SendMessage", "@User.FindFirst("sub")?.Value", receiverId, message);
+            }
+        });
+    }
+</script>
+
+<style>
+    .chat-box {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+
+    .message {
+        margin: 5px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .sent {
+        background: #dcf8c6;
+        text-align: right;
+    }
+
+    .received {
+        background: #f1f1f1;
+        text-align: left;
+    }
+</style>

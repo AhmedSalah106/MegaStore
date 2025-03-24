@@ -74,6 +74,8 @@ namespace WebApplication1
 
             app.MapHub<ProductHub>("/ProductH");
 
+            app.MapHub<ChatHub>("/ChatHub");
+
 
             app.UseSession();
             app.MapControllerRoute(
