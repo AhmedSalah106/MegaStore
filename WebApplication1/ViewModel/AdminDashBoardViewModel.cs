@@ -1,4 +1,5 @@
-﻿using MegaMarket1.Models;
+﻿using MegaMarket.Models;
+using MegaMarket1.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace MegaStore.ViewModel
@@ -16,6 +17,8 @@ namespace MegaStore.ViewModel
         public int TotalOrders {  get; set; }
 
         public List<Product>? ProductsInMarket { get; set; } = new List<Product>();
+
+        public List<Vendor>? vendors { get; set; } = new List<Vendor> { };
 
     }
 }

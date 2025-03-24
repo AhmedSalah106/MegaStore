@@ -15,11 +15,14 @@ namespace MegaStore.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IProductService productService;
         private readonly RoleManager<IdentityRole> roleManager;
-        public AdminController(IOrderService orderService ,
+        private readonly IVendorService vendorService;
+        public AdminController(IVendorService vendorService,
+                               IOrderService orderService ,
                                UserManager<ApplicationUser> userManager,
                                IProductService productService,
                                RoleManager<IdentityRole>roleManager) 
         {
+            this.vendorService = vendorService;
             this.roleManager = roleManager;
             this.productService = productService;
             this.userManager = userManager ;
@@ -35,7 +38,8 @@ namespace MegaStore.Controllers
                 TotalUsers = userManager.Users.Count(),
                 TotalProducts = productService.GetTotalProducts(),
                 TotalOrders = orderService.GetTotalOrders(),
-                ProductsInMarket = productService.GetAll()
+                ProductsInMarket = productService.GetAll(),
+                vendors = vendorService.GetAll()
             };
 
             var user = await userManager.GetUserAsync(User); // Get the current logged-in user

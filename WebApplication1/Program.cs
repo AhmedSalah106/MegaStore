@@ -45,6 +45,8 @@ namespace WebApplication1
             builder.Services.AddScoped<ISellerService,SellerService>();
             builder.Services.AddScoped<IOrderService,OrderService>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            
+
 
             builder.Services.AddSession(option =>
             {
